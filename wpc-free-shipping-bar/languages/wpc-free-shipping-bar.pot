@@ -1,0 +1,301 @@
+# Copyright (C) 2024 WPClever
+# This file is distributed under the same license as the WPC Free Shipping Bar for WooCommerce plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WPC Free Shipping Bar for WooCommerce 1.4.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wpc-free-shipping-bar\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-09-04T03:17:47+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.5.0\n"
+"X-Domain: wpc-free-shipping-bar\n"
+
+#. Plugin Name of the plugin
+msgid "WPC Free Shipping Bar for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://wpclever.net/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar."
+msgstr ""
+
+#. Author of the plugin
+msgid "WPClever"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://wpclever.net"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:177
+#: wpc-free-shipping-bar.php:188
+msgid "WPC Free Shipping Bar"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:177
+msgid "Free Shipping Bar"
+msgstr ""
+
+#. translators: stars
+#: wpc-free-shipping-bar.php:191
+msgid "Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:193
+msgid "Reviews"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:194
+msgid "Changelog"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:195
+msgid "Discussion"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:200
+msgid "Settings updated."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:206
+#: wpc-free-shipping-bar.php:441
+msgid "Settings"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:209
+#: wpc-free-shipping-bar.php:365
+msgid "Localization"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:212
+msgid "Essential Kit"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:231
+msgid "General"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:235
+msgid "Show on mini-cart widget"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:238
+#: wpc-free-shipping-bar.php:285
+#: wpc-free-shipping-bar.php:295
+#: wpc-free-shipping-bar.php:348
+msgid "Yes"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:239
+#: wpc-free-shipping-bar.php:255
+#: wpc-free-shipping-bar.php:271
+#: wpc-free-shipping-bar.php:286
+#: wpc-free-shipping-bar.php:296
+#: wpc-free-shipping-bar.php:349
+msgid "No"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:244
+msgid "Show on cart page"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:247
+msgid "Before checkout button"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:248
+msgid "After checkout button"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:249
+msgid "Before cart table"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:250
+msgid "After cart table"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:251
+msgid "Before cart totals"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:252
+msgid "After cart totals"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:253
+msgid "Before cart"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:254
+msgid "After cart"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:260
+msgid "Show on checkout page"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:263
+msgid "Before submit button"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:264
+msgid "After submit button"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:265
+msgid "Before checkout form"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:266
+msgid "After checkout form"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:267
+msgid "Before order review"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:268
+msgid "After order review"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:269
+msgid "Before customer details"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:270
+msgid "After customer details"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:276
+msgid "Shortcode"
+msgstr ""
+
+#. translators: shortcode
+#: wpc-free-shipping-bar.php:278
+msgid "You can use shortcode %s to show the free shipping bar wherever you want."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:282
+msgid "Show qualified message"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:288
+msgid "Show qualified message when reaching the free shipping amount."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:292
+msgid "Disable for Local pickup"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:298
+msgid "Disable the free shipping bar when Local pickup was selected."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:302
+msgid "Minimum Order Amount"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:307
+msgid "Priority using this amount to calculate free shipping."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:312
+msgid "Design"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:316
+msgid "Style"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:319
+msgid "Square"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:320
+msgid "Rounded"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:325
+msgid "Bar color"
+msgstr ""
+
+#. translators: color
+#: wpc-free-shipping-bar.php:331
+msgid "Choose the background color for the bar, default %s"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:335
+msgid "Progress color"
+msgstr ""
+
+#. translators: color
+#: wpc-free-shipping-bar.php:341
+msgid "Choose the background color for the progress, default %s"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:345
+msgid "Animated"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:351
+msgid "Add animation for progress bar."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:367
+msgid "Leave blank to use the default text and its equivalent translation in multiple languages."
+msgstr ""
+
+#: wpc-free-shipping-bar.php:371
+msgid "Title"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:374
+#: wpc-free-shipping-bar.php:538
+msgid "Free delivery on orders over {free_shipping_amount}"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:379
+msgid "Message"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:382
+#: wpc-free-shipping-bar.php:539
+msgid "Add at least {remaining} more to enjoy the free shipping!"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:387
+msgid "Qualified message"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:390
+#: wpc-free-shipping-bar.php:540
+msgid "Your order is qualified for free shipping!"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:395
+msgid "Placeholder"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:397
+msgid "{free_shipping_amount}: free shipping amount"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:399
+msgid "{remaining}: remaining amount"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:401
+msgid "{subtotal}: cart subtotal"
+msgstr ""
+
+#: wpc-free-shipping-bar.php:457
+msgid "Community support"
+msgstr ""
