@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the WPC Free Shipping Bar for WooCommerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPC Free Shipping Bar for WooCommerce 1.4.0\n"
+"Project-Id-Version: WPC Free Shipping Bar for WooCommerce 1.4.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wpc-free-shipping-bar\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-09-04T03:17:47+00:00\n"
+"POT-Creation-Date: 2024-10-21T09:13:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: wpc-free-shipping-bar\n"
@@ -258,7 +258,7 @@ msgid "Title"
 msgstr ""
 
 #: wpc-free-shipping-bar.php:374
-#: wpc-free-shipping-bar.php:538
+#: wpc-free-shipping-bar.php:537
 msgid "Free delivery on orders over {free_shipping_amount}"
 msgstr ""
 
@@ -267,7 +267,7 @@ msgid "Message"
 msgstr ""
 
 #: wpc-free-shipping-bar.php:382
-#: wpc-free-shipping-bar.php:539
+#: wpc-free-shipping-bar.php:538
 msgid "Add at least {remaining} more to enjoy the free shipping!"
 msgstr ""
 
@@ -276,7 +276,7 @@ msgid "Qualified message"
 msgstr ""
 
 #: wpc-free-shipping-bar.php:390
-#: wpc-free-shipping-bar.php:540
+#: wpc-free-shipping-bar.php:539
 msgid "Your order is qualified for free shipping!"
 msgstr ""
 

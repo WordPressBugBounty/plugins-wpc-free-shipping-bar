@@ -3,7 +3,7 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.4.0
+ * Version: 1.4.1
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
@@ -12,12 +12,12 @@
  * Requires at least: 4.0
  * Tested up to: 6.6
  * WC requires at least: 3.0
- * WC tested up to: 9.2
+ * WC tested up to: 9.3
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.0' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.1' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -476,10 +476,9 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 						return;
 					}
 
-					$is_qualified   = '';
-					$shipping_total = WC()->cart->get_shipping_total();
+					$is_qualified = '';
 
-					if ( $shipping_total <= 0 ) {
+					if ( WC()->customer->has_shipping_address() && ( WC()->cart->get_shipping_total() <= 0 ) ) {
 						// shipping fee zero
 						$is_qualified = 'zero_fee';
 					}
