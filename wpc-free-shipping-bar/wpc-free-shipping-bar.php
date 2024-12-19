@@ -3,24 +3,27 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.4.1
+ * Version: 1.4.2
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
  * Domain Path: /languages/
  * Requires Plugins: woocommerce
  * Requires at least: 4.0
- * Tested up to: 6.6
+ * Tested up to: 6.7
  * WC requires at least: 3.0
- * WC tested up to: 9.3
+ * WC tested up to: 9.5
+ * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.1' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.2' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
+! defined( 'WPCFB_DIR' ) && define( 'WPCFB_DIR', plugin_dir_path( __FILE__ ) );
 ! defined( 'WPCFB_REVIEWS' ) && define( 'WPCFB_REVIEWS', 'https://wordpress.org/support/plugin/wpc-free-shipping-bar/reviews/?filter=5' );
 ! defined( 'WPCFB_CHANGELOG' ) && define( 'WPCFB_CHANGELOG', 'https://wordpress.org/plugins/wpc-free-shipping-bar/#developers' );
 ! defined( 'WPCFB_DISCUSSION' ) && define( 'WPCFB_DISCUSSION', 'https://wordpress.org/support/plugin/wpc-free-shipping-bar' );
@@ -40,9 +43,6 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 	}
 
 	function wpcfb_init() {
-		// load text-domain
-		load_plugin_textdomain( 'wpc-free-shipping-bar', false, basename( __DIR__ ) . '/languages/' );
-
 		if ( ! class_exists( 'WPCleverWpcfb' ) && class_exists( 'WC_Product' ) ) {
 			class WPCleverWpcfb {
 				protected static $settings = [];
@@ -141,6 +141,10 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 				}
 
 				function init() {
+					// load text-domain
+					load_plugin_textdomain( 'wpc-free-shipping-bar', false, basename( WPCFB_DIR ) . '/languages/' );
+
+					// shortcode
 					add_shortcode( 'wpcfb', [ $this, 'shortcode' ] );
 				}
 
