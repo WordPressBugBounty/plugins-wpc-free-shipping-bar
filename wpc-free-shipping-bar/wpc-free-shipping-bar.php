@@ -3,7 +3,7 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.4.2
+ * Version: 1.4.3
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
@@ -12,14 +12,14 @@
  * Requires at least: 4.0
  * Tested up to: 6.7
  * WC requires at least: 3.0
- * WC tested up to: 9.5
+ * WC tested up to: 9.7
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.2' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.3' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -194,9 +194,12 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                             <p>
 								<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-free-shipping-bar' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
                                 <br/>
-                                <a href="<?php echo esc_url( WPCFB_REVIEWS ); ?>" target="_blank"><?php esc_html_e( 'Reviews', 'wpc-free-shipping-bar' ); ?></a> |
-                                <a href="<?php echo esc_url( WPCFB_CHANGELOG ); ?>" target="_blank"><?php esc_html_e( 'Changelog', 'wpc-free-shipping-bar' ); ?></a> |
-                                <a href="<?php echo esc_url( WPCFB_DISCUSSION ); ?>" target="_blank"><?php esc_html_e( 'Discussion', 'wpc-free-shipping-bar' ); ?></a>
+                                <a href="<?php echo esc_url( WPCFB_REVIEWS ); ?>"
+                                   target="_blank"><?php esc_html_e( 'Reviews', 'wpc-free-shipping-bar' ); ?></a> |
+                                <a href="<?php echo esc_url( WPCFB_CHANGELOG ); ?>"
+                                   target="_blank"><?php esc_html_e( 'Changelog', 'wpc-free-shipping-bar' ); ?></a> |
+                                <a href="<?php echo esc_url( WPCFB_DISCUSSION ); ?>"
+                                   target="_blank"><?php esc_html_e( 'Discussion', 'wpc-free-shipping-bar' ); ?></a>
                             </p>
                         </div>
 						<?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
@@ -206,13 +209,16 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 						<?php } ?>
                         <div class="wpclever_settings_page_nav">
                             <h2 class="nav-tab-wrapper">
-                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcfb&tab=settings' ) ); ?>" class="<?php echo esc_attr( $active_tab === 'settings' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcfb&tab=settings' ) ); ?>"
+                                   class="<?php echo esc_attr( $active_tab === 'settings' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
 									<?php esc_html_e( 'Settings', 'wpc-free-shipping-bar' ); ?>
                                 </a>
-                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcfb&tab=localization' ) ); ?>" class="<?php echo esc_attr( $active_tab === 'localization' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcfb&tab=localization' ) ); ?>"
+                                   class="<?php echo esc_attr( $active_tab === 'localization' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
 									<?php esc_html_e( 'Localization', 'wpc-free-shipping-bar' ); ?>
                                 </a>
-                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-kit' ) ); ?>" class="nav-tab">
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-kit' ) ); ?>"
+                                   class="nav-tab">
 									<?php esc_html_e( 'Essential Kit', 'wpc-free-shipping-bar' ); ?>
                                 </a>
                             </h2>
@@ -306,7 +312,9 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                             <th scope="row"><?php esc_html_e( 'Minimum Order Amount', 'wpc-free-shipping-bar' ); ?></th>
                                             <td>
                                                 <label>
-                                                    <input type="number" min="0" name="wpcfb_settings[order_amount]" value="<?php echo esc_attr( $order_amount ); ?>"/> <?php echo get_woocommerce_currency_symbol(); ?>.
+                                                    <input type="number" min="0" name="wpcfb_settings[order_amount]"
+                                                           value="<?php echo esc_attr( $order_amount ); ?>"/> <?php echo get_woocommerce_currency_symbol(); ?>
+                                                    .
                                                 </label>
                                                 <span class="description"><?php esc_html_e( 'Priority using this amount to calculate free shipping.', 'wpc-free-shipping-bar' ); ?></span>
                                             </td>
@@ -330,7 +338,9 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                             <td>
 												<?php $wpcfb_bar_color_default = apply_filters( 'wpcfb_bar_color_default', '#ecd4e5' ); ?>
                                                 <label>
-                                                    <input type="text" name="wpcfb_settings[bar_color]" value="<?php echo esc_attr( self::get_setting( 'bar_color', $wpcfb_bar_color_default ) ); ?>" class="wpcfb_color_picker"/>
+                                                    <input type="text" name="wpcfb_settings[bar_color]"
+                                                           value="<?php echo esc_attr( self::get_setting( 'bar_color', $wpcfb_bar_color_default ) ); ?>"
+                                                           class="wpcfb_color_picker"/>
                                                 </label>
                                                 <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the bar, default %s', 'wpc-free-shipping-bar' ), '<code>' . esc_html( $wpcfb_bar_color_default ) . '</code>' ); ?></span>
                                             </td>
@@ -340,7 +350,9 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                             <td>
 												<?php $wpcfb_progress_color_default = apply_filters( 'wpcfb_progress_color_default', '#95578a' ); ?>
                                                 <label>
-                                                    <input type="text" name="wpcfb_settings[progress_color]" value="<?php echo esc_attr( self::get_setting( 'progress_color', $wpcfb_progress_color_default ) ); ?>" class="wpcfb_color_picker"/>
+                                                    <input type="text" name="wpcfb_settings[progress_color]"
+                                                           value="<?php echo esc_attr( self::get_setting( 'progress_color', $wpcfb_progress_color_default ) ); ?>"
+                                                           class="wpcfb_color_picker"/>
                                                 </label>
                                                 <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the progress, default %s', 'wpc-free-shipping-bar' ), '<code>' . esc_html( $wpcfb_progress_color_default ) . '</code>' ); ?></span>
                                             </td>
@@ -375,7 +387,10 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                             <th><?php esc_html_e( 'Title', 'wpc-free-shipping-bar' ); ?></th>
                                             <td>
                                                 <label>
-                                                    <input type="text" name="wpcfb_localization[title]" style="width: 100%" value="<?php echo esc_attr( self::localization( 'title' ) ); ?>" placeholder="<?php esc_attr_e( 'Free delivery on orders over {free_shipping_amount}', 'wpc-free-shipping-bar' ); ?>"/>
+                                                    <input type="text" name="wpcfb_localization[title]"
+                                                           style="width: 100%"
+                                                           value="<?php echo esc_attr( self::localization( 'title' ) ); ?>"
+                                                           placeholder="<?php esc_attr_e( 'Free delivery on orders over {free_shipping_amount}', 'wpc-free-shipping-bar' ); ?>"/>
                                                 </label>
                                             </td>
                                         </tr>
@@ -383,7 +398,10 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                             <th><?php esc_html_e( 'Message', 'wpc-free-shipping-bar' ); ?></th>
                                             <td>
                                                 <label>
-                                                    <input type="text" name="wpcfb_localization[message]" style="width: 100%" value="<?php echo esc_attr( self::localization( 'message' ) ); ?>" placeholder="<?php esc_attr_e( 'Add at least {remaining} more to enjoy the free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
+                                                    <input type="text" name="wpcfb_localization[message]"
+                                                           style="width: 100%"
+                                                           value="<?php echo esc_attr( self::localization( 'message' ) ); ?>"
+                                                           placeholder="<?php esc_attr_e( 'Add at least {remaining} more to enjoy the free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
                                                 </label>
                                             </td>
                                         </tr>
@@ -391,7 +409,10 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                             <th><?php esc_html_e( 'Qualified message', 'wpc-free-shipping-bar' ); ?></th>
                                             <td>
                                                 <label>
-                                                    <input type="text" name="wpcfb_localization[qualified]" style="width: 100%" value="<?php echo esc_attr( self::localization( 'qualified' ) ); ?>" placeholder="<?php esc_attr_e( 'Your order is qualified for free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
+                                                    <input type="text" name="wpcfb_localization[qualified]"
+                                                           style="width: 100%"
+                                                           value="<?php echo esc_attr( self::localization( 'qualified' ) ); ?>"
+                                                           placeholder="<?php esc_attr_e( 'Your order is qualified for free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
                                                 </label>
                                             </td>
                                         </tr>
@@ -420,13 +441,17 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                             </div>
                             <div class="wpclever_settings_page_suggestion_content">
                                 <div>
-                                    To display custom engaging real-time messages on any wished positions, please install
-                                    <a href="https://wordpress.org/plugins/wpc-smart-messages/" target="_blank">WPC Smart Messages</a> plugin. It's free!
+                                    To display custom engaging real-time messages on any wished positions, please
+                                    install
+                                    <a href="https://wordpress.org/plugins/wpc-smart-messages/" target="_blank">WPC
+                                        Smart Messages</a> plugin. It's free!
                                 </div>
                                 <div>
                                     Wanna save your precious time working on variations? Try our brand-new free plugin
-                                    <a href="https://wordpress.org/plugins/wpc-variation-bulk-editor/" target="_blank">WPC Variation Bulk Editor</a> and
-                                    <a href="https://wordpress.org/plugins/wpc-variation-duplicator/" target="_blank">WPC Variation Duplicator</a>.
+                                    <a href="https://wordpress.org/plugins/wpc-variation-bulk-editor/" target="_blank">WPC
+                                        Variation Bulk Editor</a> and
+                                    <a href="https://wordpress.org/plugins/wpc-variation-duplicator/" target="_blank">WPC
+                                        Variation Duplicator</a>.
                                 </div>
                             </div>
                         </div>
@@ -556,8 +581,10 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         <div class="<?php echo esc_attr( apply_filters( 'wpcfb_wrap_class', $wrap_class, 'default' ) ); ?>">
 							<?php do_action( 'wpcfb_before_shipping_bar' ); ?>
                             <div class="wpcfb-title"><?php echo $this->kses( $title ); ?></div>
-                            <div class="wpcfb-progress-bar" style="background-color:<?php echo esc_attr( $bar_color ); ?>">
-                                <span class="wpcfb-progress-amount" style="width:<?php echo esc_attr( $percent . '%' ); ?>; background-color:<?php echo esc_attr( $progress_color ); ?>"></span>
+                            <div class="wpcfb-progress-bar"
+                                 style="background-color:<?php echo esc_attr( $bar_color ); ?>">
+                                <span class="wpcfb-progress-amount"
+                                      style="width:<?php echo esc_attr( $percent . '%' ); ?>; background-color:<?php echo esc_attr( $progress_color ); ?>"></span>
                             </div>
                             <div class="wpcfb-message"><?php echo $this->kses( $message ); ?></div>
 							<?php do_action( 'wpcfb_after_shipping_bar' ); ?>
