@@ -3,23 +3,23 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.4.3
+ * Version: 1.4.4
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
  * Domain Path: /languages/
  * Requires Plugins: woocommerce
  * Requires at least: 4.0
- * Tested up to: 6.7
+ * Tested up to: 6.8
  * WC requires at least: 3.0
- * WC tested up to: 9.7
+ * WC tested up to: 9.8
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.3' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.4' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -569,21 +569,24 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 					$show_qualified    = self::get_setting( 'show_qualified', 'yes' ) === 'yes';
 
 					if ( empty( $is_qualified ) ) {
-						$bar_color         = self::get_setting( 'bar_color', apply_filters( 'wpcfb_bar_color_default', '#ecd4e5' ) );
-						$progress_color    = self::get_setting( 'progress_color', apply_filters( 'wpcfb_progress_color_default', '#95578a' ) );
-						$remaining         = $free_shipping_min_amount - $cart_total;
-						$percent           = 100 - ( $remaining / $free_shipping_min_amount ) * 100;
-						$title             = $this->placeholders( $title, $remaining, $free_shipping_min_amount );
-						$message           = $this->placeholders( $message, $remaining, $free_shipping_min_amount );
-						$qualified_message = $this->placeholders( $qualified_message, $remaining, $free_shipping_min_amount );
-						$wrap_class        = 'wpcfb-wrap wpc-free-shipping-bar wpcfb-style-' . self::get_setting( 'style', 'square' ) . ' ' . ( self::get_setting( 'progress_animated', 'yes' ) === 'yes' ? 'wpcfb-progress-animated' : '' );
+						$bar_color             = self::get_setting( 'bar_color', apply_filters( 'wpcfb_bar_color_default', '#ecd4e5' ) );
+						$progress_color        = self::get_setting( 'progress_color', apply_filters( 'wpcfb_progress_color_default', '#95578a' ) );
+						$remaining             = $free_shipping_min_amount - $cart_total;
+						$percent               = 100 - ( $remaining / $free_shipping_min_amount ) * 100;
+						$title                 = $this->placeholders( $title, $remaining, $free_shipping_min_amount );
+						$message               = $this->placeholders( $message, $remaining, $free_shipping_min_amount );
+						$qualified_message     = $this->placeholders( $qualified_message, $remaining, $free_shipping_min_amount );
+						$wrap_class            = 'wpcfb-wrap wpc-free-shipping-bar wpcfb-style-' . self::get_setting( 'style', 'square' ) . ' ' . ( self::get_setting( 'progress_animated', 'yes' ) === 'yes' ? 'wpcfb-progress-animated' : '' );
+						$wrap_attrs            = apply_filters( 'wpcfb_wrap_attrs', [], $remaining, $free_shipping_min_amount );
+						$progress_bar_attrs    = apply_filters( 'wpcfb_progress_bar_attrs', [], $remaining, $free_shipping_min_amount );
+						$progress_amount_attrs = apply_filters( 'wpcfb_progress_amount_attrs', [], $remaining, $free_shipping_min_amount );
 						?>
-                        <div class="<?php echo esc_attr( apply_filters( 'wpcfb_wrap_class', $wrap_class, 'default' ) ); ?>">
+                        <div class="<?php echo esc_attr( apply_filters( 'wpcfb_wrap_class', $wrap_class, 'default' ) ); ?>" <?php echo self::data_attributes( $wrap_attrs ); ?>>
 							<?php do_action( 'wpcfb_before_shipping_bar' ); ?>
                             <div class="wpcfb-title"><?php echo $this->kses( $title ); ?></div>
-                            <div class="wpcfb-progress-bar"
+                            <div class="wpcfb-progress-bar" <?php echo self::data_attributes( $progress_bar_attrs ); ?>
                                  style="background-color:<?php echo esc_attr( $bar_color ); ?>">
-                                <span class="wpcfb-progress-amount"
+                                <span class="wpcfb-progress-amount" <?php echo self::data_attributes( $progress_amount_attrs ); ?>
                                       style="width:<?php echo esc_attr( $percent . '%' ); ?>; background-color:<?php echo esc_attr( $progress_color ); ?>"></span>
                             </div>
                             <div class="wpcfb-message"><?php echo $this->kses( $message ); ?></div>
@@ -709,6 +712,16 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 					}
 
 					return apply_filters( 'wpcfb_localization_' . $key, $str );
+				}
+
+				public static function data_attributes( $attrs ) {
+					$attrs_arr = [];
+
+					foreach ( $attrs as $key => $attr ) {
+						$attrs_arr[] = esc_attr( 'data-' . sanitize_title( $key ) ) . '="' . esc_attr( $attr ) . '"';
+					}
+
+					return implode( ' ', $attrs_arr );
 				}
 			}
 

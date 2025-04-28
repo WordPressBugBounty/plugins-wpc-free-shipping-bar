@@ -2,9 +2,9 @@
 Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, shipping bar, shipping, free shipping
-Tested up to: 6.7
-Version: 1.4.3
-Stable tag: 1.4.3
+Tested up to: 6.8
+Version: 1.4.4
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,9 @@ Please try other plugins from us:
 4. Done!
 
 == Changelog ==
+
+= 1.4.4 =
+* Added: Filter hook 'wpcfb_wrap_attrs', 'wpcfb_progress_bar_attrs', 'wpcfb_progress_amount_attrs'
 
 = 1.4.3 =
 * Updated: Compatible with WP 6.7 & Woo 9.7
