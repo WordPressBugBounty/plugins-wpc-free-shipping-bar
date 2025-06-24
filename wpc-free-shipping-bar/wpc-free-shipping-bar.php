@@ -3,7 +3,7 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.4.4
+ * Version: 1.4.5
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
@@ -12,14 +12,14 @@
  * Requires at least: 4.0
  * Tested up to: 6.8
  * WC requires at least: 3.0
- * WC tested up to: 9.8
+ * WC tested up to: 9.9
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.4' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.5' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -163,10 +163,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 				}
 
 				function shortcode() {
-					ob_start();
-					$this->free_shipping_bar();
-
-					return ob_get_clean();
+					return $this->get_free_shipping_bar();
 				}
 
 				function register_settings() {
@@ -189,19 +186,28 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 					$active_tab = sanitize_key( $_GET['tab'] ?? 'settings' );
 					?>
                     <div class="wpclever_settings_page wrap">
-                        <h1 class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Free Shipping Bar', 'wpc-free-shipping-bar' ) . ' ' . esc_html( WPCFB_VERSION ); ?></h1>
-                        <div class="wpclever_settings_page_desc about-text">
-                            <p>
-								<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-free-shipping-bar' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
-                                <br/>
-                                <a href="<?php echo esc_url( WPCFB_REVIEWS ); ?>"
-                                   target="_blank"><?php esc_html_e( 'Reviews', 'wpc-free-shipping-bar' ); ?></a> |
-                                <a href="<?php echo esc_url( WPCFB_CHANGELOG ); ?>"
-                                   target="_blank"><?php esc_html_e( 'Changelog', 'wpc-free-shipping-bar' ); ?></a> |
-                                <a href="<?php echo esc_url( WPCFB_DISCUSSION ); ?>"
-                                   target="_blank"><?php esc_html_e( 'Discussion', 'wpc-free-shipping-bar' ); ?></a>
-                            </p>
+                        <div class="wpclever_settings_page_header">
+                            <a class="wpclever_settings_page_header_logo" href="https://wpclever.net/"
+                               target="_blank" title="Visit wpclever.net"></a>
+                            <div class="wpclever_settings_page_header_text">
+                                <div class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Free Shipping Bar', 'wpc-free-shipping-bar' ) . ' ' . esc_html( WPCFB_VERSION ); ?></div>
+                                <div class="wpclever_settings_page_desc about-text">
+                                    <p>
+										<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-free-shipping-bar' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
+                                        <br/>
+                                        <a href="<?php echo esc_url( WPCFB_REVIEWS ); ?>"
+                                           target="_blank"><?php esc_html_e( 'Reviews', 'wpc-free-shipping-bar' ); ?></a>
+                                        |
+                                        <a href="<?php echo esc_url( WPCFB_CHANGELOG ); ?>"
+                                           target="_blank"><?php esc_html_e( 'Changelog', 'wpc-free-shipping-bar' ); ?></a>
+                                        |
+                                        <a href="<?php echo esc_url( WPCFB_DISCUSSION ); ?>"
+                                           target="_blank"><?php esc_html_e( 'Discussion', 'wpc-free-shipping-bar' ); ?></a>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
+                        <h2></h2>
 						<?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
                             <div class="notice notice-success is-dismissible">
                                 <p><?php esc_html_e( 'Settings updated.', 'wpc-free-shipping-bar' ); ?></p>
@@ -314,8 +320,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                                 <label>
                                                     <input type="number" min="0" name="wpcfb_settings[order_amount]"
                                                            value="<?php echo esc_attr( $order_amount ); ?>"/> <?php echo get_woocommerce_currency_symbol(); ?>
-                                                    .
-                                                </label>
+                                                    . </label>
                                                 <span class="description"><?php esc_html_e( 'Priority using this amount to calculate free shipping.', 'wpc-free-shipping-bar' ); ?></span>
                                             </td>
                                         </tr>
@@ -492,17 +497,17 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 					return (array) $links;
 				}
 
-				public function free_shipping_bar() {
+				public function get_free_shipping_bar() {
 					if ( ! isset( WC()->cart ) || ! WC()->cart->needs_shipping() || ! WC()->cart->show_shipping() ) {
-						return;
+						return '';
 					}
 
 					if ( apply_filters( 'wpcfb_ignore', false ) ) {
-						return;
+						return '';
 					}
 
 					if ( ! apply_filters( 'wpcfb_local_pickup', self::get_setting( 'disable_local_pickup', 'no' ) === 'no' ) && $this->is_shipping_method( $this->get_shipping_method(), 'local_pickup' ) ) {
-						return;
+						return '';
 					}
 
 					$is_qualified = '';
@@ -538,7 +543,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 						$free_shipping_ignore_discounts = $free_shipping['ignore_discounts'] ?? 'no';
 
 						if ( ! $free_shipping_min_amount ) {
-							return;
+							return '';
 						}
 
 						$cart_total          = WC()->cart->get_displayed_subtotal();
@@ -567,6 +572,8 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 					$message           = self::localization( 'message', esc_html__( 'Add at least {remaining} more to enjoy the free shipping!', 'wpc-free-shipping-bar' ) );
 					$qualified_message = self::localization( 'qualified', esc_html__( 'Your order is qualified for free shipping!', 'wpc-free-shipping-bar' ) );
 					$show_qualified    = self::get_setting( 'show_qualified', 'yes' ) === 'yes';
+
+					ob_start();
 
 					if ( empty( $is_qualified ) ) {
 						$bar_color             = self::get_setting( 'bar_color', apply_filters( 'wpcfb_bar_color_default', '#ecd4e5' ) );
@@ -606,6 +613,14 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         </div>
 						<?php
 					}
+
+					$free_shipping_bar = ob_get_clean();
+
+					return apply_filters( 'wpcfb_get_free_shipping_bar', $free_shipping_bar, $is_qualified );
+				}
+
+				public function free_shipping_bar() {
+					echo $this->get_free_shipping_bar();
 				}
 
 				public function kses( $text ) {
