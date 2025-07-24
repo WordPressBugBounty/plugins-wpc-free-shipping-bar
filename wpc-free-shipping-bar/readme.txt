@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, shipping bar, shipping, free shipping
 Tested up to: 6.8
-Version: 1.4.5
-Stable tag: 1.4.5
+Version: 1.4.6
+Stable tag: 1.4.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,9 @@ Please try other plugins from us:
 4. Done!
 
 == Changelog ==
+
+= 1.4.6 =
+* Added: Filter hook 'wpcfb_hide_if_cart_empty'
 
 = 1.4.5 =
 * Fixed: Minor CSS/JS issues in the backend

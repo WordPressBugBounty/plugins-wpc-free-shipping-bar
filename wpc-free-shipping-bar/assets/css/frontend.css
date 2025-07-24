@@ -13,6 +13,10 @@
     padding-bottom: 15px;
 }
 
+.wpcfb-wrap.wpcfb-wrap-empty {
+    display: none;
+}
+
 .wpcfb-progress-bar {
     position: relative;
     display: block;

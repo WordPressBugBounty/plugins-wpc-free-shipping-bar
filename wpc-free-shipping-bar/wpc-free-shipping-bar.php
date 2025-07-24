@@ -3,7 +3,7 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
@@ -12,14 +12,14 @@
  * Requires at least: 4.0
  * Tested up to: 6.8
  * WC requires at least: 3.0
- * WC tested up to: 9.9
+ * WC tested up to: 10.0
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.5' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.6' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -138,6 +138,10 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 							add_action( 'woocommerce_checkout_after_customer_details', [ $this, 'free_shipping_bar' ] );
 							break;
 					}
+
+					// fragments
+					add_filter( 'woocommerce_add_to_cart_fragments', [ $this, 'fragments' ] );
+					add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'fragments' ] );
 				}
 
 				function init() {
@@ -164,6 +168,12 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 
 				function shortcode() {
 					return $this->get_free_shipping_bar();
+				}
+
+				function fragments( $fragments ) {
+					$fragments['.wpcfb-wrap'] = do_shortcode( '[wpcfb]' );
+
+					return $fragments;
 				}
 
 				function register_settings() {
@@ -498,21 +508,26 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 				}
 
 				public function get_free_shipping_bar() {
+					$is_empty     = false;
+					$is_qualified = '';
+
 					if ( ! isset( WC()->cart ) || ! WC()->cart->needs_shipping() || ! WC()->cart->show_shipping() ) {
-						return '';
+						$is_empty = true;
+					}
+
+					if ( $is_empty && apply_filters( 'wpcfb_hide_if_cart_empty', true ) ) {
+						return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
 					}
 
 					if ( apply_filters( 'wpcfb_ignore', false ) ) {
-						return '';
+						return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
 					}
 
 					if ( ! apply_filters( 'wpcfb_local_pickup', self::get_setting( 'disable_local_pickup', 'no' ) === 'no' ) && $this->is_shipping_method( $this->get_shipping_method(), 'local_pickup' ) ) {
-						return '';
+						return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
 					}
 
-					$is_qualified = '';
-
-					if ( WC()->customer->has_shipping_address() && ( WC()->cart->get_shipping_total() <= 0 ) ) {
+					if ( WC()->customer->has_shipping_address() && WC()->cart->needs_shipping() && ( WC()->cart->get_shipping_total() <= 0 ) ) {
 						// shipping fee zero
 						$is_qualified = 'zero_fee';
 					}
@@ -543,7 +558,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 						$free_shipping_ignore_discounts = $free_shipping['ignore_discounts'] ?? 'no';
 
 						if ( ! $free_shipping_min_amount ) {
-							return '';
+							return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
 						}
 
 						$cart_total          = WC()->cart->get_displayed_subtotal();
