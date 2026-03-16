@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, shipping bar, shipping, free shipping
 Tested up to: 6.9
-Version: 1.4.9
-Stable tag: 1.4.9
+Version: 1.5.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,10 @@ Please try other plugins from us:
 4. Done!
 
 == Changelog ==
+
+= 1.5.0 =
+* Fixed: Minor CSS/JS issues in the backend
+* Updated: Compatible with WP 6.9 & Woo 10.6
 
 = 1.4.9 =
 * Added: Filter hook 'wpcfb_cart_subtotal' and 'wpcfb_cart_subtotal_discounted'

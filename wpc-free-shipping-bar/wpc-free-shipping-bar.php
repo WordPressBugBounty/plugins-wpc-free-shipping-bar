@@ -3,7 +3,7 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.4.9
+ * Version: 1.5.0
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
@@ -12,14 +12,14 @@
  * Requires at least: 4.0
  * Tested up to: 6.9
  * WC requires at least: 3.0
- * WC tested up to: 10.4
+ * WC tested up to: 10.6
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.4.9' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.0' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -29,6 +29,7 @@ defined( 'ABSPATH' ) || exit;
 ! defined( 'WPCFB_DISCUSSION' ) && define( 'WPCFB_DISCUSSION', 'https://wordpress.org/support/plugin/wpc-free-shipping-bar' );
 ! defined( 'WPC_URI' ) && define( 'WPC_URI', WPCFB_URI );
 
+include 'includes/log/wpc-log.php';
 include 'includes/dashboard/wpc-dashboard.php';
 include 'includes/kit/wpc-kit.php';
 include 'includes/hpos.php';
@@ -63,6 +64,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 
                     add_action( 'init', [ $this, 'init' ] );
                     add_action( 'admin_init', [ $this, 'register_settings' ] );
+                    add_filter( 'pre_update_option', [ $this, 'last_saved' ], 10, 2 );
                     add_action( 'admin_menu', [ $this, 'admin_menu' ] );
                     add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ], 99 );
                     add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
@@ -188,6 +190,15 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                             'type'              => 'array',
                             'sanitize_callback' => [ $this, 'sanitize_array' ],
                     ] );
+                }
+
+                function last_saved( $value, $option ) {
+                    if ( $option == 'wpcfb_settings' || $option == 'wpcfb_localization' ) {
+                        $value['_last_saved']    = current_time( 'timestamp' );
+                        $value['_last_saved_by'] = get_current_user_id();
+                    }
+
+                    return $value;
                 }
 
                 function admin_menu() {
@@ -390,7 +401,16 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                         </tr>
                                         <tr class="submit">
                                             <th colspan="2">
-                                                <?php settings_fields( 'wpcfb_settings' ); ?><?php submit_button(); ?>
+                                                <div class="wpclever_submit">
+                                                    <?php
+                                                    settings_fields( 'wpcfb_settings' );
+                                                    submit_button( '', 'primary', 'submit', false );
+
+                                                    if ( function_exists( 'wpc_last_saved' ) ) {
+                                                        wpc_last_saved( self::get_settings() );
+                                                    }
+                                                    ?>
+                                                </div>
                                                 <a style="display: none;" class="wpclever_export"
                                                    data-key="wpcfb_settings"
                                                    data-name="settings"
@@ -453,7 +473,16 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                         </tr>
                                         <tr class="submit">
                                             <th colspan="2">
-                                                <?php settings_fields( 'wpcfb_localization' ); ?><?php submit_button(); ?>
+                                                <div class="wpclever_submit">
+                                                    <?php
+                                                    settings_fields( 'wpcfb_localization' );
+                                                    submit_button( '', 'primary', 'submit', false );
+
+                                                    if ( function_exists( 'wpc_last_saved' ) ) {
+                                                        wpc_last_saved( get_option( 'wpcfb_localization', [] ) );
+                                                    }
+                                                    ?>
+                                                </div>
                                                 <a style="display: none;" class="wpclever_export"
                                                    data-key="wpcfb_localization"
                                                    data-name="settings"
@@ -612,12 +641,12 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         $title                 = $this->placeholders( $title, $remaining, $free_shipping_min_amount );
                         $message               = $this->placeholders( $message, $remaining, $free_shipping_min_amount );
                         $qualified_message     = $this->placeholders( $qualified_message, $remaining, $free_shipping_min_amount );
-                        $wrap_class            = 'wpcfb-wrap wpc-free-shipping-bar wpcfb-style-' . self::get_setting( 'style', 'square' ) . ' ' . ( self::get_setting( 'progress_animated', 'yes' ) === 'yes' ? 'wpcfb-progress-animated' : '' );
+                        $wrap_class            = apply_filters( 'wpcfb_wrap_class', 'wpcfb-wrap wpc-free-shipping-bar wpcfb-style-' . self::get_setting( 'style', 'square' ) . ' ' . ( self::get_setting( 'progress_animated', 'yes' ) === 'yes' ? 'wpcfb-progress-animated' : '' ), 'default' );
                         $wrap_attrs            = apply_filters( 'wpcfb_wrap_attrs', [], $remaining, $free_shipping_min_amount );
                         $progress_bar_attrs    = apply_filters( 'wpcfb_progress_bar_attrs', [], $remaining, $free_shipping_min_amount );
                         $progress_amount_attrs = apply_filters( 'wpcfb_progress_amount_attrs', [], $remaining, $free_shipping_min_amount );
                         ?>
-                        <div class="<?php echo esc_attr( apply_filters( 'wpcfb_wrap_class', $wrap_class, 'default' ) ); ?>" <?php echo self::data_attributes( $wrap_attrs ); ?>>
+                        <div class="<?php echo esc_attr( $wrap_class ); ?>" <?php echo self::data_attributes( $wrap_attrs ); ?>>
                             <?php do_action( 'wpcfb_before_shipping_bar' ); ?>
                             <div class="wpcfb-title"><?php echo $this->kses( $title ); ?></div>
                             <div class="wpcfb-progress-bar" <?php echo self::data_attributes( $progress_bar_attrs ); ?>
@@ -632,13 +661,13 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                     }
 
                     if ( ! empty( $is_qualified ) && $show_qualified ) {
-                        $wrap_class        = 'wpcfb-wrap wpc-free-shipping-bar wpcfb-qualified-message';
+                        $wrap_class        = apply_filters( 'wpcfb_wrap_class', 'wpcfb-wrap wpc-free-shipping-bar wpcfb-qualified-message', $is_qualified );
                         $qualified_message = apply_filters( 'wpcfb_qualified_message', $qualified_message, $is_qualified );
                         ?>
-                        <div class="<?php echo esc_attr( apply_filters( 'wpcfb_wrap_class', $wrap_class, 'qualified' ) ); ?>">
-                            <?php do_action( 'wpcfb_before_qualified_message' ); ?>
+                        <div class="<?php echo esc_attr( $wrap_class ); ?>">
+                            <?php do_action( 'wpcfb_before_qualified_message', $is_qualified ); ?>
                             <div class="wpcfb-message"><?php echo $this->kses( $qualified_message ); ?></div>
-                            <?php do_action( 'wpcfb_after_qualified_message' ); ?>
+                            <?php do_action( 'wpcfb_after_qualified_message', $is_qualified ); ?>
                         </div>
                         <?php
                     }
