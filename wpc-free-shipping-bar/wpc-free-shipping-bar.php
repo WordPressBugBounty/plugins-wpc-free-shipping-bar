@@ -3,7 +3,7 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
@@ -12,14 +12,14 @@
  * Requires at least: 4.0
  * Tested up to: 6.9
  * WC requires at least: 3.0
- * WC tested up to: 10.6
+ * WC tested up to: 10.7
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.0' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.1' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -27,12 +27,14 @@ defined( 'ABSPATH' ) || exit;
 ! defined( 'WPCFB_REVIEWS' ) && define( 'WPCFB_REVIEWS', 'https://wordpress.org/support/plugin/wpc-free-shipping-bar/reviews/' );
 ! defined( 'WPCFB_CHANGELOG' ) && define( 'WPCFB_CHANGELOG', 'https://wordpress.org/plugins/wpc-free-shipping-bar/#developers' );
 ! defined( 'WPCFB_DISCUSSION' ) && define( 'WPCFB_DISCUSSION', 'https://wordpress.org/support/plugin/wpc-free-shipping-bar' );
-! defined( 'WPC_URI' ) && define( 'WPC_URI', WPCFB_URI );
 
-include 'includes/log/wpc-log.php';
-include 'includes/dashboard/wpc-dashboard.php';
-include 'includes/kit/wpc-kit.php';
-include 'includes/hpos.php';
+// WPC Core
+require_once __DIR__ . '/includes/wpc-core/wpc-core.php';
+wpc_core_register( [
+        'file'    => __FILE__,
+        'version' => WPCFB_VERSION,
+        'prefix'  => 'wpcfb',
+] );
 
 if ( ! function_exists( 'wpcfb_init' ) ) {
     add_action( 'plugins_loaded', 'wpcfb_init', 11 );
