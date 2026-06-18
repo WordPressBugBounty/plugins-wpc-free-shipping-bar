@@ -2,9 +2,9 @@
 Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, shipping bar, shipping, free shipping
-Tested up to: 6.9
-Version: 1.5.1
-Stable tag: 1.5.1
+Tested up to: 7.0
+Version: 1.5.2
+Stable tag: 1.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,10 @@ Please try other plugins from us:
 4. Done!
 
 == Changelog ==
+
+= 1.5.2 =
+* Updated: Optimized the code
+* Updated: Compatible with WP 7.0 & Woo 10.8
 
 = 1.5.1 =
 * Fixed: Minor CSS/JS issues in the backend

@@ -3,23 +3,23 @@
  * Plugin Name: WPC Free Shipping Bar for WooCommerce
  * Plugin URI: https://wpclever.net/
  * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: WPClever
  * Author URI: https://wpclever.net
  * Text Domain: wpc-free-shipping-bar
  * Domain Path: /languages/
  * Requires Plugins: woocommerce
- * Requires at least: 4.0
- * Tested up to: 6.9
+ * Requires at least: 5.9
+ * Tested up to: 7.0
  * WC requires at least: 3.0
- * WC tested up to: 10.7
+ * WC tested up to: 10.8
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.1' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.2' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -149,8 +149,6 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                 }
 
                 function init() {
-                    // load text-domain
-                    load_plugin_textdomain( 'wpc-free-shipping-bar', false, basename( WPCFB_DIR ) . '/languages/' );
 
                     // shortcode
                     add_shortcode( 'wpcfb', [ $this, 'shortcode' ] );
@@ -166,7 +164,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         wp_enqueue_script( 'wpcfb-backend', WPCFB_URI . 'assets/js/backend.js', [
                                 'jquery',
                                 'wp-color-picker'
-                        ], WPCFB_VERSION );
+                        ], WPCFB_VERSION, true );
                     }
                 }
 
@@ -237,7 +235,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                             </div>
                         </div>
                         <h2></h2>
-                        <?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
+                        <?php if ( isset( $_GET['settings-updated'] ) && sanitize_key( wp_unslash( $_GET['settings-updated'] ) ) ) { ?>
                             <div class="notice notice-success is-dismissible">
                                 <p><?php esc_html_e( 'Settings updated.', 'wpc-free-shipping-bar' ); ?></p>
                             </div>
@@ -348,7 +346,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                             <td>
                                                 <label>
                                                     <input type="number" min="0" name="wpcfb_settings[order_amount]"
-                                                           value="<?php echo esc_attr( $order_amount ); ?>"/> <?php echo get_woocommerce_currency_symbol(); ?>
+                                                           value="<?php echo esc_attr( $order_amount ); ?>"/> <?php echo esc_html( get_woocommerce_currency_symbol() ); ?>
                                                     . </label>
                                                 <span class="description"><?php esc_html_e( 'Priority using this amount to calculate free shipping.', 'wpc-free-shipping-bar' ); ?></span>
                                             </td>
@@ -648,15 +646,15 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         $progress_bar_attrs    = apply_filters( 'wpcfb_progress_bar_attrs', [], $remaining, $free_shipping_min_amount );
                         $progress_amount_attrs = apply_filters( 'wpcfb_progress_amount_attrs', [], $remaining, $free_shipping_min_amount );
                         ?>
-                        <div class="<?php echo esc_attr( $wrap_class ); ?>" <?php echo self::data_attributes( $wrap_attrs ); ?>>
+                        <div class="<?php echo esc_attr( $wrap_class ); ?>" <?php echo self::data_attributes( $wrap_attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
                             <?php do_action( 'wpcfb_before_shipping_bar' ); ?>
-                            <div class="wpcfb-title"><?php echo $this->kses( $title ); ?></div>
-                            <div class="wpcfb-progress-bar" <?php echo self::data_attributes( $progress_bar_attrs ); ?>
+                            <div class="wpcfb-title"><?php echo $this->kses( $title ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+                            <div class="wpcfb-progress-bar" <?php echo self::data_attributes( $progress_bar_attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                                  style="background-color:<?php echo esc_attr( $bar_color ); ?>">
-                                <span class="wpcfb-progress-amount" <?php echo self::data_attributes( $progress_amount_attrs ); ?>
+                                <span class="wpcfb-progress-amount" <?php echo self::data_attributes( $progress_amount_attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                                       style="width:<?php echo esc_attr( $percent . '%' ); ?>; background-color:<?php echo esc_attr( $progress_color ); ?>"></span>
                             </div>
-                            <div class="wpcfb-message"><?php echo $this->kses( $message ); ?></div>
+                            <div class="wpcfb-message"><?php echo $this->kses( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
                             <?php do_action( 'wpcfb_after_shipping_bar' ); ?>
                         </div>
                         <?php
@@ -668,7 +666,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         ?>
                         <div class="<?php echo esc_attr( $wrap_class ); ?>">
                             <?php do_action( 'wpcfb_before_qualified_message', $is_qualified ); ?>
-                            <div class="wpcfb-message"><?php echo $this->kses( $qualified_message ); ?></div>
+                            <div class="wpcfb-message"><?php echo $this->kses( $qualified_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
                             <?php do_action( 'wpcfb_after_qualified_message', $is_qualified ); ?>
                         </div>
                         <?php
@@ -680,7 +678,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                 }
 
                 public function free_shipping_bar() {
-                    echo $this->get_free_shipping_bar();
+                    echo $this->get_free_shipping_bar(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 }
 
                 public function kses( $text ) {
