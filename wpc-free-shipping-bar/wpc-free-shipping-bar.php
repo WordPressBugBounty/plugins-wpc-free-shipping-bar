@@ -1,25 +1,25 @@
 <?php
-/**
- * Plugin Name: WPC Free Shipping Bar for WooCommerce
- * Plugin URI: https://wpclever.net/
- * Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
- * Version: 1.5.2
- * Author: WPClever
- * Author URI: https://wpclever.net
- * Text Domain: wpc-free-shipping-bar
- * Domain Path: /languages/
- * Requires Plugins: woocommerce
- * Requires at least: 5.9
- * Tested up to: 7.0
- * WC requires at least: 3.0
- * WC tested up to: 10.8
- * License: GPLv2 or later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
- */
+/*
+Plugin Name: WPC Free Shipping Bar for WooCommerce
+Plugin URI: https://wpclever.net/
+Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
+Version: 1.5.3
+Author: WPClever
+Author URI: https://wpclever.net
+Text Domain: wpc-free-shipping-bar
+Domain Path: /languages/
+Requires Plugins: woocommerce
+Requires at least: 5.9
+Tested up to: 7.0
+WC requires at least: 3.0
+WC tested up to: 10.9
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+*/
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.2' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.3' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -210,7 +210,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 
                 function admin_menu_content() {
                     add_thickbox();
-                    $active_tab = sanitize_key( $_GET['tab'] ?? 'settings' );
+                    $active_tab = sanitize_key( wp_unslash( $_GET['tab'] ?? 'settings' ) );
                     ?>
                     <div class="wpclever_settings_page wrap">
                         <div class="wpclever_settings_page_header">
@@ -235,7 +235,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                             </div>
                         </div>
                         <h2></h2>
-                        <?php if ( isset( $_GET['settings-updated'] ) && sanitize_key( wp_unslash( $_GET['settings-updated'] ) ) ) { ?>
+                        <?php if ( isset( $_GET['settings-updated'] ) && sanitize_key( wp_unslash( $_GET['settings-updated'] ?? '' ) ) ) { ?>
                             <div class="notice notice-success is-dismissible">
                                 <p><?php esc_html_e( 'Settings updated.', 'wpc-free-shipping-bar' ); ?></p>
                             </div>
