@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, shipping bar, shipping, free shipping
 Tested up to: 7.0
-Version: 1.5.3
-Stable tag: 1.5.3
+Version: 1.5.4
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,9 @@ Please try other plugins from us:
 4. Done!
 
 == Changelog ==
+
+= 1.5.4 =
+* Fixed: PHP Deprecated:substr()
 
 = 1.5.3 =
 * Fixed: Minor CSS/JS issues in the backend
