@@ -3,23 +3,23 @@
 Plugin Name: WPC Free Shipping Bar for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
-Version: 1.5.4
+Version: 2.0.0
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-free-shipping-bar
 Domain Path: /languages/
 Requires Plugins: woocommerce
 Requires at least: 5.9
-Tested up to: 7.0
+Tested up to: 7.1
 WC requires at least: 3.0
-WC tested up to: 10.9
+WC tested up to: 11.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '1.5.4' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '2.0.0' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -570,9 +570,24 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
                     }
 
-                    if ( WC()->customer->has_shipping_address() && WC()->cart->needs_shipping() && ( WC()->cart->get_shipping_total() <= 0 ) ) {
-                        // shipping fee zero
-                        $is_qualified = 'zero_fee';
+                    if ( WC()->customer->has_shipping_address() && WC()->cart->needs_shipping() ) {
+                        // Verify shipping has been calculated with a chosen method
+                        // that genuinely has zero cost, not just defaulting to 0
+                        $chosen_shipping = $this->get_shipping_method();
+
+                        if ( $chosen_shipping ) {
+                            $shipping_packages = WC()->shipping()->get_packages();
+
+                            foreach ( $shipping_packages as $package ) {
+                                if ( isset( $package['rates'][ $chosen_shipping ] ) ) {
+                                    if ( (float) $package['rates'][ $chosen_shipping ]->get_cost() <= 0 ) {
+                                        $is_qualified = 'zero_fee';
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                     $applied_coupons = WC()->cart->get_applied_coupons();
@@ -591,6 +606,13 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                     $cart_total               = apply_filters( 'wpcfb_cart_subtotal', WC()->cart->get_displayed_subtotal() );
 
                     if ( ! empty( $free_shipping_min_amount ) ) {
+                        // Verify that free shipping is actually available in the current shipping zone
+                        $free_shipping_data = $this->get_free_shipping();
+
+                        if ( empty( $free_shipping_data ) ) {
+                            return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
+                        }
+
                         if ( $cart_total >= $free_shipping_min_amount ) {
                             $is_qualified = 'order_amount';
                         }
