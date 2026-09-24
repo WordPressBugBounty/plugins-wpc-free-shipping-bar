@@ -3,23 +3,22 @@
 Plugin Name: WPC Free Shipping Bar for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: Encourage customers to increase their order value to be qualified for free shipping with a beautiful customizable bar.
-Version: 2.0.0
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-free-shipping-bar
 Domain Path: /languages/
 Requires Plugins: woocommerce
+Version: 2.0.1
 Requires at least: 5.9
-Tested up to: 7.1
 WC requires at least: 3.0
-WC tested up to: 11.0
+WC tested up to: 11.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '2.0.0' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '2.0.1' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -161,6 +160,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                 function admin_enqueue_scripts( $hook ) {
                     if ( strpos( $hook, 'wpcfb' ) ) {
                         wp_enqueue_style( 'wp-color-picker' );
+                        wp_enqueue_style( 'wpcfb-backend', WPCFB_URI . 'assets/css/backend.css', [], WPCFB_VERSION );
                         wp_enqueue_script( 'wpcfb-backend', WPCFB_URI . 'assets/js/backend.js', [
                                 'jquery',
                                 'wp-color-picker'
@@ -211,52 +211,73 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                 function admin_menu_content() {
                     add_thickbox();
                     $active_tab = sanitize_key( wp_unslash( $_GET['tab'] ?? 'settings' ) );
+                    
+                    $title_badge = esc_html__( 'Settings', 'wpc-free-shipping-bar' );
+                    if ( $active_tab === 'localization' ) {
+                        $title_badge = esc_html__( 'Localization', 'wpc-free-shipping-bar' );
+                    }
                     ?>
-                    <div class="wpclever_settings_page wrap">
-                        <div class="wpclever_settings_page_header">
-                            <a class="wpclever_settings_page_header_logo" href="https://wpclever.net/"
-                               target="_blank" title="Visit wpclever.net"></a>
-                            <div class="wpclever_settings_page_header_text">
-                                <div class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Free Shipping Bar', 'wpc-free-shipping-bar' ) . ' ' . esc_html( WPCFB_VERSION ); ?></div>
-                                <div class="wpclever_settings_page_desc about-text">
-                                    <p>
-                                        <?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-free-shipping-bar' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
-                                        <br/>
-                                        <a href="<?php echo esc_url( WPCFB_REVIEWS ); ?>"
-                                           target="_blank"><?php esc_html_e( 'Reviews', 'wpc-free-shipping-bar' ); ?></a>
-                                        |
-                                        <a href="<?php echo esc_url( WPCFB_CHANGELOG ); ?>"
-                                           target="_blank"><?php esc_html_e( 'Changelog', 'wpc-free-shipping-bar' ); ?></a>
-                                        |
-                                        <a href="<?php echo esc_url( WPCFB_DISCUSSION ); ?>"
-                                           target="_blank"><?php esc_html_e( 'Discussion', 'wpc-free-shipping-bar' ); ?></a>
-                                    </p>
+                    <div class="wrap wpcfb-settings-wrap">
+                        <div class="wpcfb-settings-header">
+                            <div class="wpcfb-settings-header-inner">
+                                <div class="wpcfb-header-left">
+                                    <div class="wpcfb-logo">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="1" y="3" width="15" height="13"></rect>
+                                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h1>
+                                            <?php echo esc_html__( 'WPC Free Shipping Bar', 'wpc-free-shipping-bar' ) . ' ' . esc_html( WPCFB_VERSION ); ?>
+                                            <?php if ( defined( 'WPCFB_PREMIUM' ) ) : ?>
+                                                <span class="premium"><?php esc_html_e( 'Premium', 'wpc-free-shipping-bar' ); ?></span>
+                                            <?php endif; ?>
+                                        </h1>
+                                        <p class="wpcfb-tagline">
+                                            <?php esc_html_e( 'Motivate customers to buy more with a free shipping bar.', 'wpc-free-shipping-bar' ); ?>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="wpcfb-settings-status-badge">
+                                    <?php echo esc_html( $title_badge ); ?>
                                 </div>
                             </div>
                         </div>
-                        <h2></h2>
-                        <?php if ( isset( $_GET['settings-updated'] ) && sanitize_key( wp_unslash( $_GET['settings-updated'] ?? '' ) ) ) { ?>
-                            <div class="notice notice-success is-dismissible">
-                                <p><?php esc_html_e( 'Settings updated.', 'wpc-free-shipping-bar' ); ?></p>
-                            </div>
-                        <?php } ?>
-                        <div class="wpclever_settings_page_nav">
-                            <h2 class="nav-tab-wrapper">
+
+                        <div class="wpcfb-admin-nav">
+                            <div class="wpcfb-nav-container">
                                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcfb&tab=settings' ) ); ?>"
-                                   class="<?php echo esc_attr( $active_tab === 'settings' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
+                                   class="wpcfb-nav-item <?php echo $active_tab === 'settings' ? 'active' : ''; ?>">
                                     <?php esc_html_e( 'Settings', 'wpc-free-shipping-bar' ); ?>
                                 </a>
                                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcfb&tab=localization' ) ); ?>"
-                                   class="<?php echo esc_attr( $active_tab === 'localization' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
+                                   class="wpcfb-nav-item <?php echo $active_tab === 'localization' ? 'active' : ''; ?>">
                                     <?php esc_html_e( 'Localization', 'wpc-free-shipping-bar' ); ?>
                                 </a>
+
+                                <?php if ( defined( 'WPCFB_PREMIUM' ) ) : ?>
+                                    <a href="<?php echo esc_url( WPCFB_SUPPORT ); ?>" class="wpcfb-nav-item" target="_blank">
+                                        <?php esc_html_e( 'Support', 'wpc-free-shipping-bar' ); ?>
+                                    </a>
+                                <?php endif; ?>
                                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-kit' ) ); ?>"
-                                   class="nav-tab">
+                                   class="wpcfb-nav-item">
                                     <?php esc_html_e( 'Essential Kit', 'wpc-free-shipping-bar' ); ?>
                                 </a>
-                            </h2>
+                            </div>
                         </div>
-                        <div class="wpclever_settings_page_content">
+
+                        <?php if ( isset( $_GET['settings-updated'] ) && sanitize_text_field( wp_unslash( $_GET['settings-updated'] ?? '' ) ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WordPress core param added after options.php save ?>
+                            <div class="notice notice-success is-dismissible">
+                                <p><?php esc_html_e( 'Settings updated.', 'wpc-free-shipping-bar' ); ?></p>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="wpcfb-settings-page-content">
                             <?php if ( $active_tab === 'settings' ) {
                                 $show_mini_cart       = self::get_setting( 'show_mini_cart', 'yes' );
                                 $show_cart            = self::get_setting( 'show_cart', 'yes' );
@@ -268,250 +289,225 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                                 $progress_animated    = self::get_setting( 'progress_animated', 'yes' );
                                 ?>
                                 <form method="post" action="options.php">
-                                    <table class="form-table">
-                                        <tr class="heading">
-                                            <th colspan="2">
-                                                <?php esc_html_e( 'General', 'wpc-free-shipping-bar' ); ?>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Show on mini-cart widget', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label> <select name="wpcfb_settings[show_mini_cart]">
-                                                        <option value="yes" <?php selected( $show_mini_cart, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="no" <?php selected( $show_mini_cart, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
-                                                    </select> </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Show on cart page', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label> <select name="wpcfb_settings[show_cart]">
-                                                        <option value="yes" <?php selected( $show_cart, 'yes' ); ?>><?php esc_html_e( 'Before checkout button', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_checkout" <?php selected( $show_cart, 'after_checkout' ); ?>><?php esc_html_e( 'After checkout button', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="before_cart_table" <?php selected( $show_cart, 'before_cart_table' ); ?>><?php esc_html_e( 'Before cart table', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_cart_table" <?php selected( $show_cart, 'after_cart_table' ); ?>><?php esc_html_e( 'After cart table', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="before_cart_totals" <?php selected( $show_cart, 'before_cart_totals' ); ?>><?php esc_html_e( 'Before cart totals', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_cart_totals" <?php selected( $show_cart, 'after_cart_totals' ); ?>><?php esc_html_e( 'After cart totals', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="before_cart" <?php selected( $show_cart, 'before_cart' ); ?>><?php esc_html_e( 'Before cart', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_cart" <?php selected( $show_cart, 'after_cart' ); ?>><?php esc_html_e( 'After cart', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="no" <?php selected( $show_cart, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
-                                                    </select> </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Show on checkout page', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label> <select name="wpcfb_settings[show_checkout]">
-                                                        <option value="yes" <?php selected( $show_checkout, 'yes' ); ?>><?php esc_html_e( 'Before submit button', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_submit" <?php selected( $show_checkout, 'after_submit' ); ?>><?php esc_html_e( 'After submit button', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="before_checkout_form" <?php selected( $show_checkout, 'before_checkout_form' ); ?>><?php esc_html_e( 'Before checkout form', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_checkout_form" <?php selected( $show_checkout, 'after_checkout_form' ); ?>><?php esc_html_e( 'After checkout form', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="before_order_review" <?php selected( $show_checkout, 'before_order_review' ); ?>><?php esc_html_e( 'Before order review', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_order_review" <?php selected( $show_checkout, 'after_order_review' ); ?>><?php esc_html_e( 'After order review', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="before_customer_details" <?php selected( $show_checkout, 'before_customer_details' ); ?>><?php esc_html_e( 'Before customer details', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="after_customer_details" <?php selected( $show_checkout, 'after_customer_details' ); ?>><?php esc_html_e( 'After customer details', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="no" <?php selected( $show_checkout, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
-                                                    </select> </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Shortcode', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <?php printf( /* translators: shortcode */ esc_html__( 'You can use shortcode %s to show the free shipping bar wherever you want.', 'wpc-free-shipping-bar' ), '<code>[wpcfb]</code>' ); ?>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Show qualified message', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label> <select name="wpcfb_settings[show_qualified]">
-                                                        <option value="yes" <?php selected( $show_qualified, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="no" <?php selected( $show_qualified, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
-                                                    </select> </label>
-                                                <span class="description"><?php esc_html_e( 'Show qualified message when reaching the free shipping amount.', 'wpc-free-shipping-bar' ); ?></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Disable for Local pickup', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label> <select name="wpcfb_settings[disable_local_pickup]">
-                                                        <option value="yes" <?php selected( $disable_local_pickup, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="no" <?php selected( $disable_local_pickup, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
-                                                    </select> </label>
-                                                <span class="description"><?php esc_html_e( 'Disable the free shipping bar when Local pickup was selected.', 'wpc-free-shipping-bar' ); ?></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Minimum Order Amount', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label>
-                                                    <input type="number" min="0" name="wpcfb_settings[order_amount]"
-                                                           value="<?php echo esc_attr( $order_amount ); ?>"/> <?php echo esc_html( get_woocommerce_currency_symbol() ); ?>
-                                                    . </label>
-                                                <span class="description"><?php esc_html_e( 'Priority using this amount to calculate free shipping.', 'wpc-free-shipping-bar' ); ?></span>
-                                            </td>
-                                        </tr>
-                                        <tr class="heading">
-                                            <th colspan="2">
-                                                <?php esc_html_e( 'Design', 'wpc-free-shipping-bar' ); ?>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Style', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label> <select name="wpcfb_settings[style]">
-                                                        <option value="square" <?php selected( $style, 'square' ); ?>><?php esc_html_e( 'Square', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="rounded" <?php selected( $style, 'rounded' ); ?>><?php esc_html_e( 'Rounded', 'wpc-free-shipping-bar' ); ?></option>
-                                                    </select> </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Bar color', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <?php $wpcfb_bar_color_default = apply_filters( 'wpcfb_bar_color_default', '#ecd4e5' ); ?>
-                                                <label>
-                                                    <input type="text" name="wpcfb_settings[bar_color]"
-                                                           value="<?php echo esc_attr( self::get_setting( 'bar_color', $wpcfb_bar_color_default ) ); ?>"
-                                                           class="wpcfb_color_picker"/>
-                                                </label>
-                                                <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the bar, default %s', 'wpc-free-shipping-bar' ), '<code>' . esc_html( $wpcfb_bar_color_default ) . '</code>' ); ?></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Progress color', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <?php $wpcfb_progress_color_default = apply_filters( 'wpcfb_progress_color_default', '#95578a' ); ?>
-                                                <label>
-                                                    <input type="text" name="wpcfb_settings[progress_color]"
-                                                           value="<?php echo esc_attr( self::get_setting( 'progress_color', $wpcfb_progress_color_default ) ); ?>"
-                                                           class="wpcfb_color_picker"/>
-                                                </label>
-                                                <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the progress, default %s', 'wpc-free-shipping-bar' ), '<code>' . esc_html( $wpcfb_progress_color_default ) . '</code>' ); ?></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><?php esc_html_e( 'Animated', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label> <select name="wpcfb_settings[progress_animated]">
-                                                        <option value="yes" <?php selected( $progress_animated, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
-                                                        <option value="no" <?php selected( $progress_animated, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
-                                                    </select> </label>
-                                                <span class="description"><?php esc_html_e( 'Add animation for progress bar.', 'wpc-free-shipping-bar' ); ?></span>
-                                            </td>
-                                        </tr>
-                                        <tr class="submit">
-                                            <th colspan="2">
-                                                <div class="wpclever_submit">
-                                                    <?php
-                                                    settings_fields( 'wpcfb_settings' );
-                                                    submit_button( '', 'primary', 'submit', false );
+                                    <?php settings_fields( 'wpcfb_settings' ); ?>
+                                    
+                                    <div class="wpcfb-card">
+                                        <h2 class="wpcfb-card-title"><?php esc_html_e( 'General', 'wpc-free-shipping-bar' ); ?></h2>
+                                        <p class="wpcfb-card-desc"><?php esc_html_e( 'General settings for the free shipping bar.', 'wpc-free-shipping-bar' ); ?></p>
+                                        <table class="wpcfb-form-table">
+                                            <tr>
+                                                <th><?php esc_html_e( 'Show on mini-cart widget', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label> <select name="wpcfb_settings[show_mini_cart]">
+                                                            <option value="yes" <?php selected( $show_mini_cart, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="no" <?php selected( $show_mini_cart, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
+                                                        </select> </label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Show on cart page', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label> <select name="wpcfb_settings[show_cart]">
+                                                            <option value="yes" <?php selected( $show_cart, 'yes' ); ?>><?php esc_html_e( 'Before checkout button', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_checkout" <?php selected( $show_cart, 'after_checkout' ); ?>><?php esc_html_e( 'After checkout button', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="before_cart_table" <?php selected( $show_cart, 'before_cart_table' ); ?>><?php esc_html_e( 'Before cart table', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_cart_table" <?php selected( $show_cart, 'after_cart_table' ); ?>><?php esc_html_e( 'After cart table', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="before_cart_totals" <?php selected( $show_cart, 'before_cart_totals' ); ?>><?php esc_html_e( 'Before cart totals', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_cart_totals" <?php selected( $show_cart, 'after_cart_totals' ); ?>><?php esc_html_e( 'After cart totals', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="before_cart" <?php selected( $show_cart, 'before_cart' ); ?>><?php esc_html_e( 'Before cart', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_cart" <?php selected( $show_cart, 'after_cart' ); ?>><?php esc_html_e( 'After cart', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="no" <?php selected( $show_cart, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
+                                                        </select> </label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Show on checkout page', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label> <select name="wpcfb_settings[show_checkout]">
+                                                            <option value="yes" <?php selected( $show_checkout, 'yes' ); ?>><?php esc_html_e( 'Before submit button', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_submit" <?php selected( $show_checkout, 'after_submit' ); ?>><?php esc_html_e( 'After submit button', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="before_checkout_form" <?php selected( $show_checkout, 'before_checkout_form' ); ?>><?php esc_html_e( 'Before checkout form', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_checkout_form" <?php selected( $show_checkout, 'after_checkout_form' ); ?>><?php esc_html_e( 'After checkout form', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="before_order_review" <?php selected( $show_checkout, 'before_order_review' ); ?>><?php esc_html_e( 'Before order review', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_order_review" <?php selected( $show_checkout, 'after_order_review' ); ?>><?php esc_html_e( 'After order review', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="before_customer_details" <?php selected( $show_checkout, 'before_customer_details' ); ?>><?php esc_html_e( 'Before customer details', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="after_customer_details" <?php selected( $show_checkout, 'after_customer_details' ); ?>><?php esc_html_e( 'After customer details', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="no" <?php selected( $show_checkout, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
+                                                        </select> </label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Shortcode', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <?php printf( /* translators: shortcode */ esc_html__( 'You can use shortcode %s to show the free shipping bar wherever you want.', 'wpc-free-shipping-bar' ), '<code>[wpcfb]</code>' ); ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Show qualified message', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label> <select name="wpcfb_settings[show_qualified]">
+                                                            <option value="yes" <?php selected( $show_qualified, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="no" <?php selected( $show_qualified, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
+                                                        </select> </label>
+                                                    <span class="description"><?php esc_html_e( 'Show qualified message when reaching the free shipping amount.', 'wpc-free-shipping-bar' ); ?></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Disable for Local pickup', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label> <select name="wpcfb_settings[disable_local_pickup]">
+                                                            <option value="yes" <?php selected( $disable_local_pickup, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="no" <?php selected( $disable_local_pickup, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
+                                                        </select> </label>
+                                                    <span class="description"><?php esc_html_e( 'Disable the free shipping bar when Local pickup was selected.', 'wpc-free-shipping-bar' ); ?></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Minimum Order Amount', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label>
+                                                        <input type="number" min="0" name="wpcfb_settings[order_amount]"
+                                                               value="<?php echo esc_attr( $order_amount ); ?>"/> <?php echo esc_html( get_woocommerce_currency_symbol() ); ?>
+                                                        . </label>
+                                                    <span class="description"><?php esc_html_e( 'Priority using this amount to calculate free shipping.', 'wpc-free-shipping-bar' ); ?></span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="wpcfb-card">
+                                        <h2 class="wpcfb-card-title"><?php esc_html_e( 'Design', 'wpc-free-shipping-bar' ); ?></h2>
+                                        <p class="wpcfb-card-desc"><?php esc_html_e( 'Configure the visual appearance.', 'wpc-free-shipping-bar' ); ?></p>
+                                        <table class="wpcfb-form-table">
+                                            <tr>
+                                                <th><?php esc_html_e( 'Style', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label> <select name="wpcfb_settings[style]">
+                                                            <option value="square" <?php selected( $style, 'square' ); ?>><?php esc_html_e( 'Square', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="rounded" <?php selected( $style, 'rounded' ); ?>><?php esc_html_e( 'Rounded', 'wpc-free-shipping-bar' ); ?></option>
+                                                        </select> </label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Bar color', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <?php $wpcfb_bar_color_default = apply_filters( 'wpcfb_bar_color_default', '#ecd4e5' ); ?>
+                                                    <label>
+                                                        <input type="text" name="wpcfb_settings[bar_color]"
+                                                               value="<?php echo esc_attr( self::get_setting( 'bar_color', $wpcfb_bar_color_default ) ); ?>"
+                                                               class="wpcfb_color_picker"/>
+                                                    </label>
+                                                    <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the bar, default %s', 'wpc-free-shipping-bar' ), '<code>' . esc_html( $wpcfb_bar_color_default ) . '</code>' ); ?></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Progress color', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <?php $wpcfb_progress_color_default = apply_filters( 'wpcfb_progress_color_default', '#95578a' ); ?>
+                                                    <label>
+                                                        <input type="text" name="wpcfb_settings[progress_color]"
+                                                               value="<?php echo esc_attr( self::get_setting( 'progress_color', $wpcfb_progress_color_default ) ); ?>"
+                                                               class="wpcfb_color_picker"/>
+                                                    </label>
+                                                    <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the progress, default %s', 'wpc-free-shipping-bar' ), '<code>' . esc_html( $wpcfb_progress_color_default ) . '</code>' ); ?></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Animated', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label> <select name="wpcfb_settings[progress_animated]">
+                                                            <option value="yes" <?php selected( $progress_animated, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-free-shipping-bar' ); ?></option>
+                                                            <option value="no" <?php selected( $progress_animated, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-free-shipping-bar' ); ?></option>
+                                                        </select> </label>
+                                                    <span class="description"><?php esc_html_e( 'Add animation for progress bar.', 'wpc-free-shipping-bar' ); ?></span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="wpcfb-submit-row">
+                                        <?php
+                                        submit_button( esc_html__( 'Save Changes', 'wpc-free-shipping-bar' ), 'primary', 'submit', false );
 
-                                                    if ( function_exists( 'wpc_last_saved' ) ) {
-                                                        wpc_last_saved( self::get_settings() );
-                                                    }
-                                                    ?>
-                                                </div>
-                                                <a style="display: none;" class="wpclever_export"
-                                                   data-key="wpcfb_settings"
-                                                   data-name="settings"
-                                                   href="#"><?php esc_html_e( 'import / export', 'wpc-free-shipping-bar' ); ?></a>
-                                            </th>
-                                        </tr>
-                                    </table>
+                                        if ( function_exists( 'wpc_last_saved' ) ) {
+                                            wpc_last_saved( self::get_settings() );
+                                        }
+                                        ?>
+                                        <a class="wpclever_export wpcfb-export-btn"
+                                           data-key="wpcfb_settings"
+                                           data-name="settings"
+                                           href="#"><span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import / Export', 'wpc-free-shipping-bar' ); ?></a>
+                                    </div>
                                 </form>
                             <?php } elseif ( $active_tab === 'localization' ) { ?>
                                 <form method="post" action="options.php">
-                                    <table class="form-table">
-                                        <tr class="heading">
-                                            <th scope="row"><?php esc_html_e( 'Localization', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <?php esc_html_e( 'Leave blank to use the default text and its equivalent translation in multiple languages.', 'wpc-free-shipping-bar' ); ?>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th><?php esc_html_e( 'Title', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label>
-                                                    <input type="text" name="wpcfb_localization[title]"
-                                                           style="width: 100%"
-                                                           value="<?php echo esc_attr( self::localization( 'title' ) ); ?>"
-                                                           placeholder="<?php esc_attr_e( 'Free delivery on orders over {free_shipping_amount}', 'wpc-free-shipping-bar' ); ?>"/>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th><?php esc_html_e( 'Message', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label>
-                                                    <input type="text" name="wpcfb_localization[message]"
-                                                           style="width: 100%"
-                                                           value="<?php echo esc_attr( self::localization( 'message' ) ); ?>"
-                                                           placeholder="<?php esc_attr_e( 'Add at least {remaining} more to enjoy the free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th><?php esc_html_e( 'Qualified message', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <label>
-                                                    <input type="text" name="wpcfb_localization[qualified]"
-                                                           style="width: 100%"
-                                                           value="<?php echo esc_attr( self::localization( 'qualified' ) ); ?>"
-                                                           placeholder="<?php esc_attr_e( 'Your order is qualified for free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th><?php esc_html_e( 'Placeholder', 'wpc-free-shipping-bar' ); ?></th>
-                                            <td>
-                                                <?php esc_html_e( '{free_shipping_amount}: free shipping amount', 'wpc-free-shipping-bar' ); ?>
-                                                <br/>
-                                                <?php esc_html_e( '{remaining}: remaining amount', 'wpc-free-shipping-bar' ); ?>
-                                                <br/>
-                                                <?php esc_html_e( '{subtotal}: cart subtotal', 'wpc-free-shipping-bar' ); ?>
-                                            </td>
-                                        </tr>
-                                        <tr class="submit">
-                                            <th colspan="2">
-                                                <div class="wpclever_submit">
-                                                    <?php
-                                                    settings_fields( 'wpcfb_localization' );
-                                                    submit_button( '', 'primary', 'submit', false );
+                                    <?php settings_fields( 'wpcfb_localization' ); ?>
+                                    
+                                    <div class="wpcfb-card">
+                                        <h2 class="wpcfb-card-title"><?php esc_html_e( 'Localization', 'wpc-free-shipping-bar' ); ?></h2>
+                                        <p class="wpcfb-card-desc"><?php esc_html_e( 'Leave blank to use the default text and its equivalent translation in multiple languages.', 'wpc-free-shipping-bar' ); ?></p>
+                                        <table class="wpcfb-form-table">
+                                            <tr>
+                                                <th><?php esc_html_e( 'Title', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label>
+                                                        <input type="text" name="wpcfb_localization[title]"
+                                                               style="width: 100%"
+                                                               value="<?php echo esc_attr( self::localization( 'title' ) ); ?>"
+                                                               placeholder="<?php esc_attr_e( 'Free delivery on orders over {free_shipping_amount}', 'wpc-free-shipping-bar' ); ?>"/>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Message', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label>
+                                                        <input type="text" name="wpcfb_localization[message]"
+                                                               style="width: 100%"
+                                                               value="<?php echo esc_attr( self::localization( 'message' ) ); ?>"
+                                                               placeholder="<?php esc_attr_e( 'Add at least {remaining} more to enjoy the free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Qualified message', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <label>
+                                                        <input type="text" name="wpcfb_localization[qualified]"
+                                                               style="width: 100%"
+                                                               value="<?php echo esc_attr( self::localization( 'qualified' ) ); ?>"
+                                                               placeholder="<?php esc_attr_e( 'Your order is qualified for free shipping!', 'wpc-free-shipping-bar' ); ?>"/>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><?php esc_html_e( 'Placeholder', 'wpc-free-shipping-bar' ); ?></th>
+                                                <td>
+                                                    <?php esc_html_e( '{free_shipping_amount}: free shipping amount', 'wpc-free-shipping-bar' ); ?>
+                                                    <br/>
+                                                    <?php esc_html_e( '{remaining}: remaining amount', 'wpc-free-shipping-bar' ); ?>
+                                                    <br/>
+                                                    <?php esc_html_e( '{subtotal}: cart subtotal', 'wpc-free-shipping-bar' ); ?>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="wpcfb-submit-row">
+                                        <?php
+                                        submit_button( esc_html__( 'Save Changes', 'wpc-free-shipping-bar' ), 'primary', 'submit', false );
 
-                                                    if ( function_exists( 'wpc_last_saved' ) ) {
-                                                        wpc_last_saved( get_option( 'wpcfb_localization', [] ) );
-                                                    }
-                                                    ?>
-                                                </div>
-                                                <a style="display: none;" class="wpclever_export"
-                                                   data-key="wpcfb_localization"
-                                                   data-name="settings"
-                                                   href="#"><?php esc_html_e( 'import / export', 'wpc-free-shipping-bar' ); ?></a>
-                                            </th>
-                                        </tr>
-                                    </table>
+                                        if ( function_exists( 'wpc_last_saved' ) ) {
+                                            wpc_last_saved( get_option( 'wpcfb_localization', [] ) );
+                                        }
+                                        ?>
+                                        <a class="wpclever_export wpcfb-export-btn"
+                                           data-key="wpcfb_localization"
+                                           data-name="settings"
+                                           href="#"><span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import / Export', 'wpc-free-shipping-bar' ); ?></a>
+                                    </div>
                                 </form>
                             <?php } ?>
-                        </div><!-- /.wpclever_settings_page_content -->
-                        <div class="wpclever_settings_page_suggestion">
-                            <div class="wpclever_settings_page_suggestion_label">
-                                <span class="dashicons dashicons-yes-alt"></span> Suggestion
-                            </div>
-                            <div class="wpclever_settings_page_suggestion_content">
-                                <div>
-                                    To display custom engaging real-time messages on any wished positions, please
-                                    install
-                                    <a href="https://wordpress.org/plugins/wpc-smart-messages/" target="_blank">WPC
-                                        Smart Messages</a> plugin. It's free!
-                                </div>
-                                <div>
-                                    Wanna save your precious time working on variations? Try our brand-new free plugin
-                                    <a href="https://wordpress.org/plugins/wpc-variation-bulk-editor/" target="_blank">WPC
-                                        Variation Bulk Editor</a> and
-                                    <a href="https://wordpress.org/plugins/wpc-variation-duplicator/" target="_blank">WPC
-                                        Variation Duplicator</a>.
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <?php
