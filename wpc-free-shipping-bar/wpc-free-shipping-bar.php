@@ -8,17 +8,17 @@ Author URI: https://wpclever.net
 Text Domain: wpc-free-shipping-bar
 Domain Path: /languages/
 Requires Plugins: woocommerce
-Version: 2.0.1
+Version: 2.0.2
 Requires at least: 5.9
 WC requires at least: 3.0
-WC tested up to: 11.1
+WC tested up to: 11.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '2.0.1' );
+! defined( 'WPCFB_VERSION' ) && define( 'WPCFB_VERSION', '2.0.2' );
 ! defined( 'WPCFB_LITE' ) && define( 'WPCFB_LITE', __FILE__ );
 ! defined( 'WPCFB_FILE' ) && define( 'WPCFB_FILE', __FILE__ );
 ! defined( 'WPCFB_URI' ) && define( 'WPCFB_URI', plugin_dir_url( __FILE__ ) );
@@ -145,6 +145,15 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                     // fragments
                     add_filter( 'woocommerce_add_to_cart_fragments', [ $this, 'fragments' ] );
                     add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'fragments' ] );
+
+                    // Cart/Checkout blocks (Slot/Fill + Store API)
+                    add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_block_scripts' ] );
+
+                    if ( did_action( 'woocommerce_blocks_loaded' ) ) {
+                        $this->register_store_api();
+                    } else {
+                        add_action( 'woocommerce_blocks_loaded', [ $this, 'register_store_api' ] );
+                    }
                 }
 
                 function init() {
@@ -155,6 +164,124 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
 
                 function enqueue_scripts() {
                     wp_enqueue_style( 'wpcfb-frontend', WPCFB_URI . 'assets/css/frontend.css', false, WPCFB_VERSION );
+                }
+
+                /**
+                 * Enqueue the script that renders the free shipping bar inside the Cart/Checkout blocks.
+                 */
+                function enqueue_block_scripts() {
+                    if ( ! is_cart() && ! is_checkout() ) {
+                        return;
+                    }
+
+                    wp_enqueue_script( 'wpcfb-block-bar', WPCFB_URI . 'assets/js/block-bar.js', [
+                            'wc-blocks-checkout',
+                            'wp-data',
+                            'wp-element',
+                            'wp-plugins'
+                    ], WPCFB_VERSION, true );
+                }
+
+                /**
+                 * Expose the free shipping bar data to the Store API used by the Cart/Checkout blocks.
+                 */
+                function register_store_api() {
+                    if ( ! function_exists( 'woocommerce_store_api_register_endpoint_data' ) ) {
+                        return;
+                    }
+
+                    woocommerce_store_api_register_endpoint_data( [
+                            'endpoint'        => 'cart',
+                            'namespace'       => 'wpcfb',
+                            'data_callback'   => [ $this, 'get_block_bar_data' ],
+                            'schema_callback' => [ $this, 'get_block_bar_schema' ],
+                            'schema_type'     => ARRAY_A,
+                    ] );
+                }
+
+                /**
+                 * Schema of the data exposed to the Cart/Checkout blocks.
+                 *
+                 * @return array
+                 */
+                function get_block_bar_schema() {
+                    $string  = [ 'type' => 'string', 'context' => [ 'view', 'edit' ], 'readonly' => true ];
+                    $number  = [ 'type' => 'number', 'context' => [ 'view', 'edit' ], 'readonly' => true ];
+                    $boolean = [ 'type' => 'boolean', 'context' => [ 'view', 'edit' ], 'readonly' => true ];
+
+                    return [
+                            'state'          => $string,
+                            'show_cart'      => $boolean,
+                            'show_checkout'  => $boolean,
+                            'wrap_class'     => $string,
+                            'title_html'     => $string,
+                            'message_html'   => $string,
+                            'bar_color'      => $string,
+                            'progress_color' => $string,
+                            'percent'        => $number,
+                    ];
+                }
+
+                /**
+                 * Build the free shipping bar state for the Cart/Checkout blocks.
+                 * Mirrors the logic of get_free_shipping_bar().
+                 *
+                 * @return array
+                 */
+                function get_block_bar_data() {
+                    $data = [
+                            'state'          => 'hidden',
+                            'show_cart'      => self::get_setting( 'show_cart', 'yes' ) !== 'no',
+                            'show_checkout'  => self::get_setting( 'show_checkout', 'yes' ) !== 'no',
+                            'wrap_class'     => '',
+                            'title_html'     => '',
+                            'message_html'   => '',
+                            'bar_color'      => '',
+                            'progress_color' => '',
+                            'percent'        => 0,
+                    ];
+
+                    if ( ! WC()->cart || ! WC()->customer || ! WC()->session ) {
+                        return $data;
+                    }
+
+                    $bar_data = $this->get_bar_data();
+
+                    if ( $bar_data['state'] === 'empty' ) {
+                        return $data;
+                    }
+
+                    $is_qualified             = $bar_data['is_qualified'];
+                    $free_shipping_min_amount = $bar_data['min_amount'];
+                    $cart_total               = $bar_data['cart_total'];
+
+                    if ( $bar_data['state'] === 'qualified' ) {
+                        if ( self::get_setting( 'show_qualified', 'yes' ) !== 'yes' ) {
+                            return $data;
+                        }
+
+                        $qualified_message = self::localization( 'qualified', esc_html__( 'Your order is qualified for free shipping!', 'wpc-free-shipping-bar' ) );
+
+                        $data['state']        = 'qualified';
+                        $data['wrap_class']   = apply_filters( 'wpcfb_wrap_class', 'wpcfb-wrap wpc-free-shipping-bar wpcfb-qualified-message', $is_qualified );
+                        $data['message_html'] = $this->kses( apply_filters( 'wpcfb_qualified_message', $qualified_message, $is_qualified ) );
+
+                        return $data;
+                    }
+
+                    $remaining = $free_shipping_min_amount - $cart_total;
+                    $title     = self::localization( 'title', esc_html__( 'Free delivery on orders over {free_shipping_amount}', 'wpc-free-shipping-bar' ) );
+                    $message   = self::localization( 'message', esc_html__( 'Add at least {remaining} more to enjoy the free shipping!', 'wpc-free-shipping-bar' ) );
+
+                    $data['state']          = 'progress';
+                    $data['wrap_class']     = apply_filters( 'wpcfb_wrap_class', 'wpcfb-wrap wpc-free-shipping-bar wpcfb-style-' . self::get_setting( 'style', 'square' ) . ' ' . ( self::get_setting( 'progress_animated', 'yes' ) === 'yes' ? 'wpcfb-progress-animated' : '' ), 'default' );
+                    $data['title_html']     = $this->kses( $this->placeholders( $title, $remaining, $free_shipping_min_amount ) );
+                    $data['message_html']   = $this->kses( $this->placeholders( $message, $remaining, $free_shipping_min_amount ) );
+                    $data['bar_color']      = (string) self::get_setting( 'bar_color', apply_filters( 'wpcfb_bar_color_default', '#ecd4e5' ) );
+                    $data['progress_color'] = (string) self::get_setting( 'progress_color', apply_filters( 'wpcfb_progress_color_default', '#95578a' ) );
+                    $data['percent']        = max( 0, min( 100, 100 - ( $remaining / $free_shipping_min_amount ) * 100 ) );
+
+                    return $data;
                 }
 
                 function admin_enqueue_scripts( $hook ) {
@@ -546,7 +673,14 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                     return (array) $links;
                 }
 
-                public function get_free_shipping_bar() {
+                /**
+                 * Calculate the state of the free shipping bar for the current cart.
+                 * Shared by the classic markup and the Cart/Checkout blocks.
+                 *
+                 * @return array
+                 */
+                public function get_bar_data() {
+                    $empty_data   = [ 'state' => 'empty' ];
                     $is_empty     = false;
                     $is_qualified = '';
 
@@ -555,15 +689,15 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                     }
 
                     if ( $is_empty && apply_filters( 'wpcfb_hide_if_cart_empty', true ) ) {
-                        return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
+                        return $empty_data;
                     }
 
                     if ( apply_filters( 'wpcfb_ignore', false ) ) {
-                        return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
+                        return $empty_data;
                     }
 
                     if ( ! apply_filters( 'wpcfb_local_pickup', self::get_setting( 'disable_local_pickup', 'no' ) === 'no' ) && $this->is_shipping_method( $this->get_shipping_method(), 'local_pickup' ) ) {
-                        return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
+                        return $empty_data;
                     }
 
                     if ( WC()->customer->has_shipping_address() && WC()->cart->needs_shipping() ) {
@@ -606,7 +740,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         $free_shipping_data = $this->get_free_shipping();
 
                         if ( empty( $free_shipping_data ) ) {
-                            return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
+                            return $empty_data;
                         }
 
                         if ( $cart_total >= $free_shipping_min_amount ) {
@@ -618,7 +752,7 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                         $free_shipping_ignore_discounts = $free_shipping['ignore_discounts'] ?? 'no';
 
                         if ( ! $free_shipping_min_amount ) {
-                            return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
+                            return $empty_data;
                         }
 
                         $discount            = WC()->cart->get_discount_total();
@@ -643,6 +777,25 @@ if ( ! function_exists( 'wpcfb_init' ) ) {
                             $is_qualified = 'total';
                         }
                     }
+
+                    return [
+                            'state'        => empty( $is_qualified ) ? 'progress' : 'qualified',
+                            'is_qualified' => $is_qualified,
+                            'min_amount'   => $free_shipping_min_amount,
+                            'cart_total'   => $cart_total,
+                    ];
+                }
+
+                public function get_free_shipping_bar() {
+                    $bar_data = $this->get_bar_data();
+
+                    if ( $bar_data['state'] === 'empty' ) {
+                        return '<div class="wpcfb-wrap wpcfb-wrap-empty"></div>';
+                    }
+
+                    $is_qualified             = $bar_data['is_qualified'];
+                    $free_shipping_min_amount = $bar_data['min_amount'];
+                    $cart_total               = $bar_data['cart_total'];
 
                     $title             = self::localization( 'title', esc_html__( 'Free delivery on orders over {free_shipping_amount}', 'wpc-free-shipping-bar' ) );
                     $message           = self::localization( 'message', esc_html__( 'Add at least {remaining} more to enjoy the free shipping!', 'wpc-free-shipping-bar' ) );
@@ -844,7 +997,7 @@ if ( ! function_exists( 'wpcfb_notice_wc' ) ) {
     function wpcfb_notice_wc() {
         ?>
         <div class="error">
-            <p><strong>WPC Free Shipping Bar</strong> require WooCommerce version 3.0 or greater.</p>
+            <p><strong>WPC Free Shipping Bar</strong> requires WooCommerce version 3.0 or greater.</p>
         </div>
         <?php
     }

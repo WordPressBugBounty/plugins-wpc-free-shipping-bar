@@ -17,6 +17,7 @@
 /* === Settings Wrap === */
 .wpcfb-settings-wrap {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    width: 90%;
     max-width: 960px;
     width: 90%;
     margin: 20px auto;
